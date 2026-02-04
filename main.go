@@ -20,6 +20,15 @@ func main() {
 	common.LoadConfig()
 	log.Info("Successfully loaded application configuration", "config", common.Config)
 
+	db := common.ConnectPostgres()
+	defer db.Close()
+
+	err := db.Ping()
+	if err != nil {
+		log.With("error", err).Fatal("failed to ping postgres")
+	}
+	log.Info("Successfully connected to the database!")
+
 	dg, err := common.StartDiscordBot([]*discordgo.ApplicationCommand{}, map[string]common.CommandHandler{})
 	if err != nil {
 		log.With("error", err).Fatal("failed to start discord client.")

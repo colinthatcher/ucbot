@@ -9,13 +9,22 @@ import (
 var Config *config
 
 type config struct {
-	Port    int           `mapstructure:"port"`
-	Name    string        `mapstructure:"name"`
-	Discord discordConfig `mapstructure:"discord"`
+	Port     int
+	Name     string
+	Discord  discordConfig
+	Postgres postgresConfig
+}
+
+type postgresConfig struct {
+	Host     string
+	Port     string
+	Database string
+	User     string
+	Password string
 }
 
 type discordConfig struct {
-	APIKey    string `mapstructure:"apikey"`
+	APIKey    string
 	ChannelID string
 	GuildID   string
 	// OAuth Config
@@ -41,16 +50,18 @@ func LoadConfig() {
 		UserAPIURL:   getOrDefault("DISCORD_USER_API_URL", "https://discord.com/api/users/@me"),
 		Scopes:       getOrDefault("DISCORD_SCOPES", "identify"),
 	}
+	postgresConfig := postgresConfig{
+		Host:     getOrDefault("POSTGRES_HOST", "localhost"),
+		Port:     getOrDefault("POSTGRES_PORT", "5432"),
+		Database: getOrDefault("POSTGRES_DB", "postgres"),
+		User:     getOrDefault("POSTGRES_USER", "postgres"),
+		Password: getOrDefault("POSTGRES_PASSWORD", "postgres"),
+	}
 	config := &config{
-		// PostgresHost:      getOrDefault("POSTGRES_HOST", "localhost"),
-		// PostgresPort:      getOrDefault("POSTGRES_PORT", "5432"),
-		// PostgresDatabase:  getOrDefault("POSTGRES_DB", "postgres"),
-		// PostgresUser:      getOrDefault("POSTGRES_USER", "postgres"),
-		// PostgresPassword:  getOrDefault("POSTGRES_PASSWORD", "postgres"),
-		// TemplateDirectory: getOrDefault("TEMPLATE_DIRECTORY", "templates/"),
-		Port:    getOrDefault("PORT", 8080),
-		Name:    getOrDefault("NAME", "ucbot"),
-		Discord: discordConfig,
+		Port:     getOrDefault("PORT", 8080),
+		Name:     getOrDefault("NAME", "ucbot"),
+		Postgres: postgresConfig,
+		Discord:  discordConfig,
 	}
 	Config = config
 }

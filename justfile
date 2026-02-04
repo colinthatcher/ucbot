@@ -15,4 +15,5 @@ fmt:
 	go fmt .
 
 run: fmt
+	docker compose -f ./docker/docker-compose.yaml up -d postgres
 	air
