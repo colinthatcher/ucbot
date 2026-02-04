@@ -1,0 +1,35 @@
+services:
+  ucbot:
+    image: ucbot
+    build:
+      context: ../
+      dockerfile: docker/local.dockerfile
+    ports:
+      - 8080:8080
+    volumes:
+      - ../:/app
+    env_file:
+      - ../.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+  postgres:
+    image: postgres
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    env_file:
+      - ../.env
+    ports:
+      - 5432:5432
+    # uncomment to enable persisting database across restarts
+    # volumes:
+    #   - ./postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+# volumes:
+#   postgres:
