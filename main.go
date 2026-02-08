@@ -5,8 +5,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/charmbracelet/log"
+	"github.com/colinthatcher/ucbot/internal/bots/bot1"
+	"github.com/colinthatcher/ucbot/internal/bots/bot2"
 	"github.com/colinthatcher/ucbot/internal/common"
 )
 
@@ -20,7 +21,12 @@ func main() {
 	common.LoadConfig()
 	log.Info("Successfully loaded application configuration", "config", common.Config)
 
-	dg, err := common.StartDiscordBot([]*discordgo.ApplicationCommand{}, map[string]common.CommandHandler{})
+	commands, commandHandlers := common.AggregateBotCommands([]common.Bot{
+		bot1.Bot1,
+		bot2.Bot1,
+	})
+
+	dg, err := common.StartDiscordBot(commands, commandHandlers)
 	if err != nil {
 		log.With("error", err).Fatal("failed to start discord client.")
 	}

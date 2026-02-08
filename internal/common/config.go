@@ -4,18 +4,20 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/bwmarrin/discordgo"
 )
 
 var Config *config
 
 type config struct {
-	Port    int           `mapstructure:"port"`
-	Name    string        `mapstructure:"name"`
-	Discord discordConfig `mapstructure:"discord"`
+	Port    int
+	Name    string
+	Discord discordConfig
 }
 
 type discordConfig struct {
-	APIKey    string `mapstructure:"apikey"`
+	APIKey    string
 	ChannelID string
 	GuildID   string
 	// OAuth Config
@@ -26,6 +28,26 @@ type discordConfig struct {
 	TokenURL     string
 	UserAPIURL   string
 	Scopes       string
+}
+
+type CommandHandler func(s *discordgo.Session, i *discordgo.InteractionCreate)
+
+type Bot struct {
+	Name            string
+	Commands        []*discordgo.ApplicationCommand
+	CommandHandlers map[string]CommandHandler
+}
+
+func AggregateBotCommands(bots []Bot) (commands []*discordgo.ApplicationCommand, commandHandlers map[string]CommandHandler) {
+	// TODO: COLIN I HAVE A QUESTION ABOUT THIS
+	commandHandlers = make(map[string]CommandHandler)
+	for _, bot := range bots {
+		commands = append(commands, bot.Commands...)
+		for name, handler := range bot.CommandHandlers {
+			commandHandlers[name] = handler
+		}
+	}
+	return commands, commandHandlers
 }
 
 func LoadConfig() {
