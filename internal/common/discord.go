@@ -5,8 +5,6 @@ import (
 	"github.com/charmbracelet/log"
 )
 
-type CommandHandler func(s *discordgo.Session, i *discordgo.InteractionCreate)
-
 var commands = []*discordgo.ApplicationCommand{
 	{
 		Name:        "idme",
