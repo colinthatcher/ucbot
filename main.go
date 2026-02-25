@@ -21,6 +21,15 @@ func main() {
 	common.LoadConfig()
 	log.Info("Successfully loaded application configuration", "config", common.Config)
 
+	db := common.ConnectPostgres()
+	defer db.Close()
+
+	err := db.Ping()
+	if err != nil {
+		log.With("error", err).Fatal("failed to ping postgres")
+	}
+	log.Info("Successfully connected to the database!")
+
 	commands, commandHandlers := common.AggregateBotCommands([]common.Bot{
 		bot1.Bot1,
 		bot2.Bot1,
